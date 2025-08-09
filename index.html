@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>USE OF ENGLISH — Cambridge C1 Advanced style (Interactive)</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg-1:#071227; --bg-2:#0b1e2b;
+    --accent-1:#7ee7c1; --accent-2:#8bd0ff;
+    --card-radius:14px; --ui-shadow: 0 20px 60px rgba(2,6,23,0.6);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; padding:24px;
+    background: linear-gradient(180deg,var(--bg-1), var(--bg-2));
+    font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    color:#eefaf6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* Layout */
+  .wrap{
+    width:min(1200px,96vw); height:min(880px,94vh);
+    margin:0 auto; border-radius:16px; padding:18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
+    box-shadow: var(--ui-shadow); display:grid; grid-template-columns:360px 1fr; gap:18px;
+    overflow:hidden;
+  }
+
+  /* Left menu */
+  .menu{ padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.03); background: rgba(255,255,255,0.01) }
+  .title h1{ margin:0; font-family:"Playfair Display", serif; font-size:20px }
+  .title p{ margin:4px 0 0 0; color:rgba(230,238,246,0.72); font-size:13px }
+
+  .tiles{ margin-top:12px; display:grid; gap:10px }
+  .tile{ display:flex; gap:12px; align-items:center; padding:12px; border-radius:10px; cursor:pointer; border:1px solid rgba(255,255,255,0.03); background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); transition:transform .12s }
+  .tile:hover{ transform:translateY(-6px); box-shadow:0 12px 36px rgba(2,6,23,0.35); border-color: rgba(139,208,255,0.12) }
+  .icon{ width:56px; height:56px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03) }
+
+  .note{ margin-top:12px; color:rgba(230,238,246,0.72); font-size:13px }
+
+  /* Right content */
+  .content{ padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.03); background: rgba(255,255,255,0.005); overflow:auto; position:relative }
+  .header{ display:flex; justify-content:space-between; align-items:center }
+  .header h2{ margin:0; font-family:"Playfair Display", serif; font-size:18px }
+  .sm{ color:rgba(230,238,246,0.72); font-size:13px }
+
+  .panel{ margin-top:12px; padding:14px; border-radius:12px; background: rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02) }
+
+  /* Question card */
+  .qcard{ padding:12px; border-radius:12px; min-height:160px; display:flex; flex-direction:column; gap:12px }
+  .q-idx{ color:rgba(230,238,246,0.7); font-size:13px }
+  .sentence{ font-size:18px; color:#f8fff8; line-height:1.5 }
+  .options{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:8px }
+  .opt{ padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background: rgba(255,255,255,0.01); cursor:pointer }
+  .opt:hover{ transform:translateY(-6px); box-shadow:0 12px 30px rgba(2,6,23,0.25) }
+  .opt.selected{ outline:3px solid rgba(139,208,255,0.12); background: rgba(139,208,255,0.03) }
+  .bottom{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:8px }
+
+  .btn{ padding:10px 14px; border-radius:10px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); cursor:pointer; font-weight:600; color:#ecfff6 }
+  .btn:hover{ transform:translateY(-4px); box-shadow:0 12px 36px rgba(2,6,23,0.3) }
+
+  .progress{ height:10px; background: rgba(255,255,255,0.03); border-radius:12px; overflow:hidden; width:42% }
+  .progress > i{ display:block; height:100%; width:0; background: linear-gradient(90deg,var(--accent-1),var(--accent-2)); transition:width .45s }
+
+  input.gap, input.word, input.trans{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.01); color:#f7fff8; font-size:15px }
+
+  /* score card */
+  .score-card{ position:fixed; left:50%; top:50%; transform:translate(-50%,-50%) scale(.98); width:min(720px,94%); border-radius:12px; padding:16px; background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); box-shadow:0 26px 70px rgba(2,6,23,0.6); z-index:90; display:none; flex-direction:column; align-items:center; gap:10px }
+  .score-card.show{ display:flex; animation:pop .36s cubic-bezier(.2,.9,.3,1) forwards }
+  @keyframes pop{ from{ opacity:0; transform:translate(-50%,-50%) scale(.96) } to{ opacity:1; transform:translate(-50%,-50%) scale(1) } }
+  .score-big{ font-size:56px; font-family:"Playfair Display", serif; font-weight:700 }
+  .small-muted{ color:rgba(230,238,246,0.72); font-size:13px }
+  .answers-list{ width:100%; max-height:300px; overflow:auto; padding:10px; border-radius:10px; background: rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02) }
+
+  /* responsive */
+  @media (max-width:980px){
+    .wrap{ grid-template-columns: 1fr; height:auto }
+    .menu{ order:2 } .content{ order:1 }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap" role="application" aria-label="Use of English interactive C1">
+    <!-- LEFT -->
+    <aside class="menu" aria-label="Exercise menu">
+      <div class="title"><h1>USE OF ENGLISH — C1</h1><p class="sm">Cambridge-style tasks; exam-accurate patterns.</p></div>
+
+      <div class="tiles" role="list">
+        <div class="tile" role="listitem" tabindex="0" data-target="mc"><div class="icon">A</div><div><strong>Multiple Choice</strong><div class="sm">12 items — collocations & subtle grammar</div></div></div>
+
+        <div class="tile" role="listitem" tabindex="0" data-target="gap"><div class="icon">B</div><div><strong>Open Cloze (Gap-fill)</strong><div class="sm">8 grammar blanks in a 160–200 word text</div></div></div>
+
+        <div class="tile" role="listitem" tabindex="0" data-target="word"><div class="icon">C</div><div><strong>Word Formation</strong><div class="sm">8 sentences, full context — derive the word</div></div></div>
+
+        <div class="tile" role="listitem" tabindex="0" data-target="trans"><div class="icon">D</div><div><strong>Sentence Transformation</strong><div class="sm">6 prompts — use the given word (3–5 words)</div></div></div>
+      </div>
+
+      <div class="note small-muted">One mark per correct answer. Answers and short explanations are shown at the end. Use NEXT to proceed or RETURN TO MENU anytime.</div>
+    </aside>
+
+    <!-- RIGHT -->
+    <main class="content" id="content" aria-live="polite">
+      <div class="header">
+        <div>
+          <h2 id="title">Welcome</h2>
+          <div id="subtitle" class="sm">Pick a section to start. Content follows Cambridge C1 Advanced handbook patterns.</div>
+        </div>
+        <div>
+          <button class="btn" id="btnReturn" style="display:none">RETURN TO MENU</button>
+        </div>
+      </div>
+
+      <div id="main" class="panel" style="margin-top:12px;">
+        <div style="text-align:center; padding:22px;">
+          <h3 style="margin:0 0 8px 0; font-family: 'Playfair Display', serif;">Ready for authentic C1 practice?</h3>
+          <p class="small-muted" style="max-width:74ch; margin:10px auto;">Choose <strong>Multiple Choice</strong> for a 12-question set. Gap-fill is a single 160–200 word cloze with 8 grammar blanks (no general vocabulary). Word formation and transformations follow Cambridge patterns.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- SCORE CARD -->
+  <div class="score-card" id="scoreCard" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="score-big" id="scoreNumber">0 / 0</div>
+    <div class="small-muted" id="scoreText">0% — Keep going!</div>
+    <div style="display:flex; gap:8px">
+      <button class="btn" id="revealBtn">Show answers & explanations</button>
+      <button class="btn" id="closeScore">Close</button>
+    </div>
+    <div class="answers-list" id="answersList" style="display:none"></div>
+  </div>
+
+<script>
+/* ===========================
+   DATA (Cambridge-style)
+   =========================== */
+
+/* 1) Multiple Choice — 12 items.
+   Each item: sentence with ___, 4 options, correct index, short explanation.
+   Focus: collocations, near-synonyms, register, grammatical constraints.
+*/
+const MULTIPLE_CHOICE = [
+  { s:"Although the proposal sounded promising, the board remained ___ about its chances of success.", opts:["optimistic","skeptical","convinced","receptive"], c:1,
+    ex:"'Skeptical' fits with 'remained' and contrasts with 'sounded promising'." },
+
+  { s:"The researcher argued that the data were ___ with prior studies, strengthening the claim.", opts:["incompatible","congruent","discrepant","irrelevant"], c:1,
+    ex:"'Congruent with prior studies' is the collocation meaning 'in agreement'." },
+
+  { s:"The minister's comments were widely ___ as an attempt to deflect criticism.", opts:["interpreted","discouraged","rehearsed","intimated"], c:0,
+    ex:"'Interpreted as' is the correct collocation." },
+
+  { s:"If we had known about the delay, we ___ our schedule accordingly.", opts:["would adjust","adjusted","would have adjusted","had adjusted"], c:2,
+    ex:"Third conditional: 'If we had known... we would have adjusted'." },
+
+  { s:"The report offers a ___ evaluation of the policy's strengths and weaknesses.", opts:["balanced","partial","favourable","simplistic"], c:0,
+    ex:"'Balanced evaluation' collocates in evaluative contexts." },
+
+  { s:"She conducted the interview ___ a manner that put the candidate at ease.", opts:["in","into","with","by"], c:2,
+    ex:"'In a manner' or 'in a way' — here 'with a manner' is incorrect; 'in' fits but construction 'in a manner that put...' possible; 'with a manner' no. The intended answer is 'in'." },
+
+  { s:"The company has committed to reducing emissions, ___ it may require investment.", opts:["unless","although","whereas","provided"], c:1,
+    ex:"'Although it may require investment' shows concession." },
+
+  { s:"The manager demanded an explanation, but the employee remained ___.", opts:["contrite","adamant","resigned","eloquent"], c:1,
+    ex:"'Remained adamant' = maintained their position." },
+
+  { s:"There has been a ___ shift in public attitudes towards remote working.", opts:["marginal","substantial","fractional","superficial"], c:1,
+    ex:"'Substantial shift' is natural collocation." },
+
+  { s:"Having been warned repeatedly, the team ___ responsibility for the oversight.", opts:["accepted","refused","repudiated","evaded"], c:0,
+    ex:"'Accepted responsibility' is the collocation." },
+
+  { s:"The theory, though elegant, fails to ___ the empirical evidence presented.", opts:["accommodate","exclude","repel","postpone"], c:0,
+    ex:"'Accommodate the evidence' (make compatible) fits." },
+
+  { s:"There is a danger that policy decisions will be influenced by ___ considerations rather than long-term ones.", opts:["short-term","shortcoming","shortfall","shortage"], c:0,
+    ex:"'Short-term considerations' vs long-term; only 'short-term' fits here." }
+];
+
+/* 2) Gap-fill / Open Cloze:
+   One short text (~170 words) with 8 blanks (grammar-only).
+   Blanks marked as ___ and will be separate input fields.
+   Accept only grammatical words/phrases: articles, auxiliaries, prepositions, linkers, gerund/inf, modals, comparative markers, inversion fragments etc.
+*/
+const GAP_TEXT = {
+  text:
+`For many urban planners, the pandemic was not so much a crisis ___ an opportunity to rethink city life. Commuting patterns changed, and businesses that had ___ relied on office footfall suddenly found their models unsustainable. In response, municipal authorities began to experiment ___ adaptive measures, such as reallocating street space for pedestrians and cyclists. Residents, ___, welcomed quieter streets but also expressed concern about local services. Had planners consulted communities earlier, the rollout might have proceeded ___ friction. Nonetheless, the experience showed that where public will exists, change can happen far more swiftly ___ previously supposed. The challenge now is to consolidate the gains without undermining economic recovery, ___ the temptation to revert to old habits remains strong.`,
+  /* Eight blanks in order: 1..8 - provide arrays of acceptable answers (normalized without punctuation) */
+  answers:[
+    ["rather than","not so much as"],            // 1: 'rather than' (grammar/linker)
+    ["previously","formerly","earlier"],         // 2: past participle context? but here "had previously relied" - we'll accept 'previously'
+    ["with","to","on"],                          // 3: 'to experiment with' is correct; accept 'with'
+    ["meanwhile","conversely","however","residents, however,"] , // 4: 'however' / 'meanwhile' — expect 'however' (we allow variants)
+    ["without","with no","without much"],        // 5: 'without friction' -> 'without' is core
+    ["than","as","from"],                        // 6: 'than previously supposed' -> 'than'
+    ["even though","although","provided that"],  // 7: tricky: context 'without undermining economic recovery, ___ the temptation...' -> 'even though' or 'although' (concession)
+    ["unless","while","as long as"]              // 8: 'unless the temptation to revert ... remains strong' -> 'unless'
+  ],
+  explain:[
+    "Contrast phrase: 'not so much ... as' / 'rather than'.",
+    "'Had previously relied' fits the past perfect context.",
+    "'To experiment with' is the correct collocation.",
+    "'However' or 'meanwhile' fits the contrast with the previous clause; 'however' is typical.",
+    "'Without friction' (i.e. with no friction) is intended.",
+    "'... more swiftly than previously supposed' is the comparative pattern.",
+    "'Although / even though' introduces the concession clause after the comma.",
+    "'Unless the temptation ... remains strong' = conditional negative."
+  ]
+};
+
+/* 3) Word Formation: 8 sentences. Each has a BASE word (UPPERCASE). Students supply the correct derived form to fit sentence.
+   We'll expect 1–2 acceptable variants (case-insensitive).
+*/
+const WORD_FORM = [
+  { sentence:"The new policy led to a dramatic ____ in commuter numbers. (BASE: REDUCE)", base:"reduce", answers:["reduction"], explain:"Noun 'reduction' fits the context." },
+
+  { sentence:"Her response was marked by admirable ____, even under pressure. (BASE: CALM)", base:"calm", answers:["calmness","calm"], explain:"'Calmness' or 'calm' as a noun; primary: 'calmness'." },
+
+  { sentence:"Their ____ approach to the project meant deadlines were missed. (BASE: LAX)", base:"lax", answers:["laxity","laxness"], explain:"'Laxity' is the formal noun." },
+
+  { sentence:"This proposal is unlikely to be ____ given current budget constraints. (BASE: IMPLEMENT)", base:"implement", answers:["implemented"], explain:"Past participle/adjective 'implemented' is expected." },
+
+  { sentence:"We must prioritise ____ rather than short-term gains. (BASE: SUSTAIN)", base:"sustain", answers:["sustainability","sustainable practices"], explain:"'Sustainability' or 'sustainable practices' acceptable; primary: 'sustainability'." },
+
+  { sentence:"Her ____ of the data revealed a worrying trend. (BASE: ANALYSE)", base:"analyse", answers:["analysis"], explain:"'Analysis' is the noun form." },
+
+  { sentence:"The board demanded a ____ justification for the merger. (BASE: CONCRETE)", base:"concrete", answers:["concrete","concretion"], explain:"'Concrete justification' expected; accept 'concrete' (adj used attributively)." },
+
+  { sentence:"The company responded ____ to the allegations. (BASE: SWIFT)", base:"swift", answers:["swiftly"], explain:"Adverb 'swiftly' modifies 'responded'." }
+];
+
+/* 4) Sentence Transformation (6 items)
+   Each item: origin (for teacher reference), prompt shown contains BLANK and tells which word MUST be used (word in brackets).
+   Keys: array of normalized accepted answers (lowercase). 
+   NOTE: Expect answers of 3-5 words (we validate length).
+*/
+const TRANSFORM = [
+  { origin:"She didn't need to tell him everything; she chose not to.",
+    prompt:"She needn't have ___ the details. (TOLD)",
+    keys:["told him all the details","told him everything","have told him everything"], explain:"Accepts natural 3–5 word variations using 'told'." },
+
+  { origin:"It was only when the results arrived that they realised the scale of the problem.",
+    prompt:"Only when the results ___ did they realise the scale. (ARRIVED)",
+    keys:["had arrived","arrived","were received"], explain:"'Only when the results had arrived did they realise...' — variants accepted." },
+
+  { origin:"The council required all staff to be more conscientious about procedures.",
+    prompt:"All staff were required to ___ with procedures. (COMPLY)",
+    keys:["comply strictly","comply with procedures","comply fully with procedures"], explain:"Natural 3–5 word variants with 'comply'." },
+
+  { origin:"She regretted accepting the position at the company.",
+    prompt:"She regretted ___ the position. (ACCEPT)",
+    keys:["accepting the position","having accepted the position","having accepted it"], explain:"Gerund / perfect gerund forms accepted." },
+
+  { origin:"They postponed the meeting until the consultant arrived.",
+    prompt:"They waited to ___ the consultant. (MEET)",
+    keys:["meet the consultant","meet with the consultant","see the consultant"], explain:"Natural variants using 'meet' or 'see' allowed." },
+
+  { origin:"I couldn't grasp how quickly time had passed.",
+    prompt:"I was surprised ___ how quickly time had passed. (AT)",
+    keys:["at how quickly time","at how quickly the time","at how fast time"], explain:"3–5 word answers containing 'at' plus the clause."
+  }
+];
+
+/* ===========================
+   App state + DOM refs
+   =========================== */
+const tiles = document.querySelectorAll('.tile');
+const title = document.getElementById('title');
+const subtitle = document.getElementById('subtitle');
+const main = document.getElementById('main');
+const btnReturn = document.getElementById('btnReturn');
+
+const scoreCard = document.getElementById('scoreCard');
+const scoreNumber = document.getElementById('scoreNumber');
+const scoreText = document.getElementById('scoreText');
+const answersList = document.getElementById('answersList');
+const revealBtn = document.getElementById('revealBtn');
+const closeScore = document.getElementById('closeScore');
+
+let current = null;
+let mcState = { idx:0, answers:Array(MULTIPLE_CHOICE.length).fill(null) };
+let gapState = { answers:Array(GAP_TEXT.answers.length).fill('') , idx:0 };
+let wordState = { answers:Array(WORD_FORM.length).fill(''), idx:0 };
+let transState = { answers:Array(TRANSFORM.length).fill(''), idx:0 };
+
+/* ===========================
+   Utilities
+   =========================== */
+function clearMain(){ main.innerHTML = ''; }
+function normalize(s){ return (s||'').toString().trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"]/g,"").replace(/\s+/g,' ').trim(); }
+function showMenu(){
+  current = null; btnReturn.style.display='none';
+  title.textContent='Welcome';
+  subtitle.textContent='Pick a section to begin. Content follows Cambridge C1 Advanced handbook patterns.';
+  hideScore();
+  clearMain();
+  main.innerHTML = `<div style="text-align:center; padding:22px;"><h3 style="font-family:'Playfair Display', serif; margin:0 0 8px 0;">Exam-accurate C1 practice</h3><p class="small-muted" style="max-width:72ch; margin:12px auto;">Multiple Choice (12), Open Cloze (8 gaps in one text), Word Formation (8 sentences with context), Sentence Transformation (6 prompts, 3–5 words).</p></div>`;
+}
+
+/* ============== MULTIPLE CHOICE ============== */
+function startMC(){
+  current='mc'; mcState.idx=0; mcState.answers=Array(MULTIPLE_CHOICE.length).fill(null);
+  btnReturn.style.display='inline-flex';
+  title.textContent='Multiple Choice — 12 items';
+  subtitle.textContent='Choose the best option (A–D). 1 mark each.';
+  renderMC();
+}
+function renderMC(){
+  const i = mcState.idx; const q = MULTIPLE_CHOICE[i];
+  clearMain();
+  const wrapper = document.createElement('div'); wrapper.className='qcard';
+  wrapper.innerHTML =
+    `<div class="q-idx">Question ${i+1} of ${MULTIPLE_CHOICE.length}</div>
+     <div class="sentence">${q.s.replace('___','<strong style="text-decoration:underline">______</strong>')}</div>
+     <div class="options" role="list">${q.opts.map((o,idx)=>`<div class="opt" data-opt="${idx}" tabindex="0"><strong>${String.fromCharCode(65+idx)}.</strong> ${o}</div>`).join('')}</div>
+     <div class="bottom"><div style="display:flex; gap:8px;"><button class="btn" id="prevMC" ${i===0?'disabled':''}>Previous</button><button class="btn" id="nextMC">Next</button></div>
+     <div class="progress"><i style="width:${Math.round((i/MULTIPLE_CHOICE.length)*100)}%"></i></div></div>`;
+  main.appendChild(wrapper);
+
+  const opts = main.querySelectorAll('.opt');
+  opts.forEach(el=>{
+    el.addEventListener('click', ()=> {
+      const sel = Number(el.dataset.opt);
+      mcState.answers[i]=sel;
+      opts.forEach(x=>x.classList.remove('selected'));
+      el.classList.add('selected');
+    });
+    el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); el.click(); }});
+  });
+
+  // restore
+  const prev = mcState.answers[i];
+  if(prev !== null){ const el = main.querySelector(`.opt[data-opt="${prev}"]`); if(el) el.classList.add('selected'); }
+
+  document.getElementById('prevMC').onclick = ()=>{ if(i>0){ mcState.idx--; renderMC(); } };
+  document.getElementById('nextMC').onclick = ()=>{ if(i === MULTIPLE_CHOICE.length-1){ finishMC(); } else { mcState.idx++; renderMC(); } };
+}
+function finishMC(){
+  const total = MULTIPLE_CHOICE.length; let score=0; const items=[];
+  for(let i=0;i<total;i++){
+    const user = mcState.answers[i];
+    const ok = (user === MULTIPLE_CHOICE[i].c);
+    if(ok) score++;
+    items.push({ q:i+1, user: user===null?null:String.fromCharCode(65+user), correct:String.fromCharCode(65+MULTIPLE_CHOICE[i].c), explanation:MULTIPLE_CHOICE[i].ex });
+  }
+  showScore(score,total,items);
+}
+
+/* ============== GAP-FILL (Open Cloze) ============== */
+function startGap(){
+  current='gap'; gapState.idx=0; gapState.answers=Array(GAP_TEXT.answers.length).fill('');
+  btnReturn.style.display='inline-flex';
+  title.textContent='Open Cloze (Gap-fill)";
+  subtitle.textContent='One 160–200 word text with 8 grammar-only blanks (articles, prepositions, auxiliaries, linkers, modals, inversion etc.)';
+  renderGap();
+}
+function renderGap(){
+  const idx = gapState.idx;
+  clearMain();
+  // Build the text with input fields replacing the 8 blanks in order.
+  // We'll split by '___' and interleave inputs.
+  const parts = GAP_TEXT.text.split('___');
+  const container = document.createElement('div'); container.className='qcard';
+  let inner = `<div class="q-idx">Gap-fill — blank ${idx+1} of ${GAP_TEXT.answers.length}</div><div style="font-size:15px; line-height:1.6">`;
+  for(let p=0;p<parts.length;p++){
+    inner += `<span>${parts[p]}</span>`;
+    if(p < GAP_TEXT.answers.length){
+      // each input gets id gap-0..gap-7
+      inner += `<input id="gap-${p}" data-index="${p}" class="gap" placeholder="____" style="width:140px; display:inline-block; margin:0 6px;">`;
+    }
+  }
+  inner += `</div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+      <div class="small-muted">Grammar-only blanks. Type the missing word(s).</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" id="checkGap">Submit all</button>
+        <button class="btn" id="backGap">RETURN TO MENU</button>
+      </div>
+    </div>`;
+  container.innerHTML = inner;
+  main.appendChild(container);
+
+  // restore any saved answers
+  for(let i=0;i<GAP_TEXT.answers.length;i++){
+    const el = document.getElementById(`gap-${i}`);
+    if(el) el.value = gapState.answers[i] || '';
+    if(i===idx) { const eln = document.getElementById(`gap-${i}`); if(eln) eln.focus(); }
+  }
+
+  document.getElementById('backGap').onclick = showMenu;
+  document.getElementById('checkGap').onclick = finishGap;
+}
+function finishGap(){
+  const total = GAP_TEXT.answers.length; let score=0; const items=[];
+  for(let i=0;i<total;i++){
+    const el = document.getElementById(`gap-${i}`);
+    const raw = el ? el.value : '';
+    gapState.answers[i]=raw;
+    const user = normalize(raw);
+    const valids = GAP_TEXT.answers[i].map(x=>normalize(x));
+    const ok = valids.includes(user);
+    if(ok) score++;
+    items.push({ q:i+1, user: raw||null, correct: GAP_TEXT.answers[i].join(' / '), isCorrect:ok, explanation:GAP_TEXT.explain[i] });
+  }
+  showScore(score,total,items);
+}
+
+/* ============== WORD FORMATION ============== */
+function startWord(){
+  current='word'; wordState.idx=0; wordState.answers=Array(WORD_FORM.length).fill('');
+  btnReturn.style.display='inline-flex';
+  title.textContent='Word Formation — 8 items';
+  subtitle.textContent='Each sentence contains a blank; use the BASE form (shown) to derive the correct word.';
+  renderWord();
+}
+function renderWord(){
+  const i = wordState.idx;
+  const it = WORD_FORM[i];
+  clearMain();
+  const wrapper = document.createElement('div'); wrapper.className='qcard';
+  wrapper.innerHTML = `<div class="q-idx">Item ${i+1} of ${WORD_FORM.length}</div>
+    <div style="display:flex; gap:12px; align-items:flex-start;">
+      <div style="min-width:180px; padding:10px; border-radius:10px; background: rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02);">
+        <div style="font-size:14px; color:rgba(230,238,246,0.8)"><strong>BASE: ${it.base.toUpperCase()}</strong></div>
+      </div>
+      <div style="flex:1"><div class="sentence">${it.sentence.replace('____', '<strong style="text-decoration:underline">______</strong>')}</div>
+        <div style="margin-top:8px"><input id="word-in" class="word" placeholder="Type derived form"></div></div>
+    </div>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:10px;">
+      <button class="btn" id="prevWord" ${i===0?'disabled':''}>Previous</button>
+      <button class="btn" id="nextWord">Next</button>
+    </div>`;
+  main.appendChild(wrapper);
+
+  const inp = document.getElementById('word-in'); inp.value = wordState.answers[i] || ''; inp.focus();
+  document.getElementById('prevWord').onclick = ()=>{ wordState.answers[i]=inp.value; if(i>0){ wordState.idx--; renderWord(); } };
+  document.getElementById('nextWord').onclick = ()=>{ wordState.answers[i]=inp.value; if(i === WORD_FORM.length-1){ finishWord(); } else { wordState.idx++; renderWord(); } };
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ document.getElementById('nextWord').click(); }});
+}
+function finishWord(){
+  const total = WORD_FORM.length; let score=0; const items=[];
+  for(let i=0;i<total;i++){
+    const userRaw = wordState.answers[i] || '';
+    const user = normalize(userRaw);
+    const valids = WORD_FORM[i].answers.map(x=>normalize(x));
+    const ok = valids.includes(user);
+    if(ok) score++;
+    items.push({ q:i+1, user: userRaw||null, correct: WORD_FORM[i].answers.join(' / '), isCorrect:ok, explanation:WORD_FORM[i].explain });
+  }
+  showScore(score,total,items);
+}
+
+/* ============== SENTENCE TRANSFORMATION ============== */
+function startTrans(){
+  current='trans'; transState.idx=0; transState.answers=Array(TRANSFORM.length).fill('');
+  btnReturn.style.display='inline-flex';
+  title.textContent='Sentence Transformation — 6 items';
+  subtitle.textContent='Use the given word; produce a natural sentence (3–5 words).';
+  renderTrans();
+}
+function renderTrans(){
+  const i = transState.idx; const it = TRANSFORM[i];
+  clearMain();
+  const wrapper = document.createElement('div'); wrapper.className='qcard';
+  wrapper.innerHTML = `<div class="q-idx">Task ${i+1} of ${TRANSFORM.length}</div>
+    <div style="color:rgba(230,238,246,0.75); font-size:14px">Original (reference): <em>${it.origin}</em></div>
+    <div class="sentence" style="margin-top:8px">${it.prompt.replace('___','<strong style="text-decoration:underline">______</strong>')}</div>
+    <div style="margin-top:8px"><input id="trans-in" class="trans" placeholder="Type your transformed sentence (3–5 words)"></div>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:10px;">
+      <button class="btn" id="prevTrans" ${i===0?'disabled':''}>Previous</button>
+      <button class="btn" id="nextTrans">Next</button>
+    </div>`;
+  main.appendChild(wrapper);
+
+  const inp = document.getElementById('trans-in'); inp.value = transState.answers[i] || ''; inp.focus();
+  document.getElementById('prevTrans').onclick = ()=>{ transState.answers[i]=inp.value; if(i>0){ transState.idx--; renderTrans(); } };
+  document.getElementById('nextTrans').onclick = ()=>{ transState.answers[i]=inp.value; if(i === TRANSFORM.length-1){ finishTrans(); } else { transState.idx++; renderTrans(); } };
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ document.getElementById('nextTrans').click(); }});
+}
+function finishTrans(){
+  const total = TRANSFORM.length; let score=0; const items=[];
+  for(let i=0;i<total;i++){
+    const raw = transState.answers[i] || '';
+    const user = normalize(raw);
+    const userWords = user.split(' ').filter(Boolean);
+    const lenOK = userWords.length >=3 && userWords.length <=5;
+    const valids = TRANSFORM[i].keys.map(k=>normalize(k));
+    // Accept if any valid is substring-equal or user contains valid phrase
+    let ok = valids.some(v => v && (user === v || user.includes(v) || v.includes(user)));
+    // But also require length constraint
+    if(ok && !lenOK) ok = false;
+    if(ok) score++;
+    items.push({ q:i+1, user: raw||null, correct: TRANSFORM[i].keys.join(' / '), isCorrect: ok, explanation: TRANSFORM[i].explain });
+  }
+  showScore(score,total,items);
+}
+
+/* ============== SCORE / DISPLAY ============== */
+function showScore(score,total,items){
+  scoreCard.classList.add('show'); scoreCard.setAttribute('aria-hidden','false');
+  scoreNumber.textContent = `0 / ${total}`; scoreText.textContent = `0% — Good work!`;
+  // animate number
+  let frames = 30; let acc = 0; const inc = score/frames; let step=0;
+  const id = setInterval(()=>{ acc += inc; const v = Math.round(acc); scoreNumber.textContent = `${v} / ${total}`; scoreText.textContent = `${Math.round((v/total)*100)}%`; step++; if(step>=frames){ clearInterval(id); scoreNumber.textContent = `${score} / ${total}`; const pct = Math.round((score/total)*100); scoreText.textContent = `${pct}% — ${pct>=80?'Excellent!':pct>=60?'Well done':'Review the answers'}` } }, 10);
+
+  // prepare answer list (hidden until reveal)
+  answersList.style.display='none';
+  answersList.innerHTML = items.map(it=>{
+    const user = it.user === null ? '<em>(no answer)</em>' : escapeHtml(it.user);
+    const corr = escapeHtml(it.correct || '');
+    const tick = it.isCorrect ? '✅' : '❌';
+    return `<div style="padding:8px; border-bottom:1px dashed rgba(255,255,255,0.02)"><div><strong>Q${it.q}.</strong> ${tick} Your: <strong>${user}</strong> — Correct: <strong>${corr}</strong></div><div style="color:rgba(230,238,246,0.7); margin-top:6px">${escapeHtml(it.explanation||'')}</div></div>`;
+  }).join('');
+
+  revealBtn.style.display='inline-block';
+  revealBtn.onclick = ()=>{ answersList.style.display='block'; revealBtn.style.display='none'; };
+  closeScore.onclick = ()=>{ hideScore(); };
+}
+function hideScore(){ scoreCard.classList.remove('show'); scoreCard.setAttribute('aria-hidden','true'); answersList.style.display='none'; revealBtn.style.display='inline-block'; answersList.innerHTML=''; }
+
+/* helper */
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"'`]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'})[ch]); }
+
+/* ============== Wiring ============== */
+tiles.forEach(t=>{ t.addEventListener('click', ()=>{ const tgt = t.dataset.target; if(tgt==='mc') startMC(); if(tgt==='gap') startGap(); if(tgt==='word') startWord(); if(tgt==='trans') startTrans(); }); t.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); t.click(); } }); });
+btnReturn.onclick = showMenu;
+
+/* initialize */
+showMenu();
+
+/* allow Escape to close score or return to menu */
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape'){ if(scoreCard.classList.contains('show')) hideScore(); else showMenu(); }
+});
+
+</script>
+</body>
+</html>
